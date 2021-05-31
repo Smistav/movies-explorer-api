@@ -8,19 +8,21 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 const MongoError = require('../errors/MongoError');
 
 module.exports.createUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
   bcrypt
     .hash(password, 10)
-    .then(hash => User.create({
-        name,
-        about,
-        avatar,
-        email,
-        password: hash,
-      }))
-    .then(user => res.send(user))
-    .catch(err => {
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
+    .then((user) => res.send(user))
+    .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
@@ -32,15 +34,15 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then(users => res.send(users))
+    .then((users) => res.send(users))
     .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail()
-    .then(user => res.send(user))
-    .catch(err => {
+    .then((user) => res.send(user))
+    .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(`Пользователь по указанному ${req.user._id} не найден`));
       }
@@ -50,8 +52,8 @@ module.exports.getUser = (req, res, next) => {
 module.exports.getUserId = (req, res, next) => {
   User.findById(req.params.id)
     .orFail()
-    .then(user => res.send(user))
-    .catch(err => {
+    .then((user) => res.send(user))
+    .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(`Пользователь по указанному ${req.user._id} не найден`));
       }
@@ -62,8 +64,8 @@ module.exports.setUserInfo = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true })
     .orFail()
-    .then(user => res.send(user))
-    .catch(err => {
+    .then((user) => res.send(user))
+    .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
       }
@@ -77,8 +79,8 @@ module.exports.setUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true })
     .orFail()
-    .then(user => res.send(user))
-    .catch(err => {
+    .then((user) => res.send(user))
+    .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
       }
@@ -91,7 +93,7 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
-    .then(user => {
+    .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
@@ -105,5 +107,5 @@ module.exports.login = (req, res, next) => {
         })
         .send({ token });
     })
-    .catch(err => next(new UnauthorizedError(err.message)));
+    .catch((err) => next(new UnauthorizedError(err.message)));
 };
