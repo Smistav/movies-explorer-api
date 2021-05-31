@@ -31,11 +31,9 @@ router.post(
 router.delete(
   '/:movieId',
   celebrate({
-    params: Joi.object()
-      .keys({
-        movieId: Joi.string().length(24),
-      })
-      .unknown(true),
+    params: Joi.object().keys({
+      movieId: Joi.string().length(24),
+    }).unknown(true),
     query: Joi.object()
       .keys({
         _id: Joi.string().length(24),

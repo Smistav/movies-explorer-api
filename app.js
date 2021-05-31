@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const { PORT = 3000 } = process.env;
-const MONGO_DB = 'mongodb://localhost:27017/mestodb';
+const MONGO_DB = 'mongodb://localhost:27017/bitfilmsdb';
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -14,7 +14,7 @@ const { celebrate, Joi } = require('celebrate');
 const cors = require('cors');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-const cards = require('./routes/cards');
+const movies = require('./routes/movies');
 const users = require('./routes/users');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
@@ -64,10 +64,6 @@ app.post(
       name: Joi.string()
         .min(2)
         .max(30),
-      about: Joi.string()
-        .min(2)
-        .max(30),
-      avatar: Joi.string(),
       email: Joi.string()
         .required()
         .email(),
@@ -81,7 +77,7 @@ app.post(
 
 app.use(auth);
 
-app.use('/cards', cards);
+app.use('/movies', movies);
 
 app.use('/users', users);
 
