@@ -1,18 +1,20 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
-const {
-  getUsers,
-  getUser,
-  setUserInfo,
-  setUserAvatar,
-  getUserId,
-} = require('../controllers/users');
+const { getUser, setUser } = require('../controllers/users');
 
-router.get('/', getUsers);
 router.get(
   '/me',
   celebrate({
+    body: Joi.object().keys({
+      name: Joi.string()
+        .required()
+        .min(2)
+        .max(30),
+      email: Joi.string()
+        .email()
+        .required(),
+    }),
     query: Joi.object()
       .keys({
         _id: Joi.string().length(24),
@@ -20,17 +22,6 @@ router.get(
       .unknown(true),
   }),
   getUser,
-);
-router.get(
-  '/:id',
-  celebrate({
-    params: Joi.object()
-      .keys({
-        id: Joi.string().length(24),
-      })
-      .unknown(true),
-  }),
-  getUserId,
 );
 router.patch(
   '/me',
@@ -40,10 +31,9 @@ router.patch(
         .required()
         .min(2)
         .max(30),
-      about: Joi.string()
-        .required()
-        .min(2)
-        .max(30),
+      email: Joi.string()
+        .email()
+        .required(),
     }),
     query: Joi.object()
       .keys({
@@ -51,21 +41,7 @@ router.patch(
       })
       .unknown(true),
   }),
-  setUserInfo,
-);
-router.patch(
-  '/me/avatar',
-  celebrate({
-    body: Joi.object().keys({
-      avatar: Joi.string().required(),
-    }),
-    query: Joi.object()
-      .keys({
-        _id: Joi.string().length(24),
-      })
-      .unknown(true),
-  }),
-  setUserAvatar,
+  setUser,
 );
 
 module.exports = router;
