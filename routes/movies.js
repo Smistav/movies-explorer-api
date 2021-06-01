@@ -18,11 +18,11 @@ router.post(
       thumbnail: Joi.string().required(),
       nameRU: Joi.string().required(),
       nameEN: Joi.string().required(),
-      movieId: Joi.string().required(),
+      // movieId: Joi.string().required(),
     }),
     query: Joi.object()
       .keys({
-        _id: Joi.string().length(24),
+        _id: Joi.string(),
       })
       .unknown(true),
   }),

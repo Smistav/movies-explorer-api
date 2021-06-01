@@ -9,15 +9,13 @@ const MongoError = require('../errors/MongoError');
 
 module.exports.createUser = (req, res, next) => {
   const {
-    name, about, avatar, email, password,
+    name, email, password,
   } = req.body;
 
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({
       name,
-      about,
-      avatar,
       email,
       password: hash,
     }))
@@ -32,12 +30,6 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.getUsers = (req, res, next) => {
-  User.find({})
-    .then((users) => res.send(users))
-    .catch(next);
-};
-
 module.exports.getUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail()
@@ -49,20 +41,9 @@ module.exports.getUser = (req, res, next) => {
     });
 };
 
-module.exports.getUserId = (req, res, next) => {
-  User.findById(req.params.id)
-    .orFail()
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError(`Пользователь по указанному ${req.user._id} не найден`));
-      }
-    });
-};
-
-module.exports.setUserInfo = (req, res, next) => {
-  const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true })
+module.exports.setUser = (req, res, next) => {
+  const { name, email } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, email }, { runValidators: true, new: true })
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
@@ -75,20 +56,6 @@ module.exports.setUserInfo = (req, res, next) => {
     });
 };
 
-module.exports.setUserAvatar = (req, res, next) => {
-  const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true })
-    .orFail()
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError(`Пользователь по указанному ${req.user._id} не найден`));
-      }
-    });
-};
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 

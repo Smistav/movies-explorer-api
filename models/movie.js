@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 
-const REGEXPLINK = /https?:\/\/(www\.)?[a-z0-9-.]{3,20}[a-z]{2,6}[-._~:/[\]?#@!$&'()*+,;=a-z0-9]*/g;
 const REGEXPEN = /^[a-zA-Z0-9-]+$/g;
-const REGEXPRU = /^[а-яёА-ЯЁ-]+$/g;
+const REGEXPRU = /^[а-яёА-ЯЁ0-9-]+$/g;
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -29,8 +28,9 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(link) {
-        return REGEXPLINK.test(link);
+        return /https?:\/\/(www\.)?[a-z0-9-.]{3,20}[a-z]{2,6}[-._~:/[\]?#@!$&'()*+,;=a-z0-9]*/g.test(link);
       },
+      message: 'Не правильный URL',
     },
     required: true,
   },
@@ -38,8 +38,9 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(link) {
-        return REGEXPLINK.test(link);
+        return /https?:\/\/(www\.)?[a-z0-9-.]{3,20}[a-z]{2,6}[-._~:/[\]?#@!$&'()*+,;=a-z0-9]*/g.test(link);
       },
+      message: 'Не правильный URL',
     },
     required: true,
   },
@@ -47,17 +48,10 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(link) {
-        return REGEXPLINK.test(link);
+        return /https?:\/\/(www\.)?[a-z0-9-.]{3,20}[a-z]{2,6}[-._~:/[\]?#@!$&'()*+,;=a-z0-9]*/g.test(link);
       },
+      message: 'Не правильный URL',
     },
-    required: true,
-  },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-  },
-  movieId: {
-    type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
   nameRU: {
@@ -66,17 +60,27 @@ const movieSchema = new mongoose.Schema({
       validator(link) {
         return REGEXPRU.test(link);
       },
+      message: 'Это поле должно быть на русском',
     },
     required: true,
   },
-  nameEn: {
+  nameEN: {
     type: String,
     validate: {
       validator(link) {
         return REGEXPEN.test(link);
       },
+      message: 'Это поле должно быть на английском',
     },
     required: true,
   },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  // movieId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   required: true,
+  // },
 });
 module.exports = mongoose.model('movie', movieSchema);
