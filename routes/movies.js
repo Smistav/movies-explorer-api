@@ -22,7 +22,7 @@ router.post(
     }),
     query: Joi.object()
       .keys({
-        _id: Joi.string(),
+        _id: Joi.string().length(24),
       })
       .unknown(true),
   }),
