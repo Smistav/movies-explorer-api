@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { PORT = 3001 } = process.env;
+const { PORT = 3000 } = process.env;
 const MONGO_DB = 'mongodb://localhost:27017/bitfilmsdb';
 
 const express = require('express');
@@ -99,4 +99,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, console.log(`${PORT}`));
+app.listen(PORT);
