@@ -45,6 +45,7 @@ module.exports.createMovie = (req, res, next) => {
 
 module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId)
+    .orFail()
     .then((movie) => {
       if (String(movie.owner) === req.user._id) {
         return movie;

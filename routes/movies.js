@@ -26,11 +26,6 @@ router.post('/',
       nameEN: Joi.string().required(),
       movieId: Joi.number().integer().required(),
     }),
-    query: Joi.object()
-      .keys({
-        _id: Joi.string().length(24),
-      })
-      .unknown(true),
   }),
   createMovie);
 router.delete('/:movieId',
