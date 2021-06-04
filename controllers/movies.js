@@ -17,7 +17,7 @@ module.exports.createMovie = (req, res, next) => {
     trailer,
     thumbnail,
     nameRU, nameEN,
-    // movieId,
+    movieId,
   } = req.body;
   Movie.create({
     country,
@@ -30,13 +30,15 @@ module.exports.createMovie = (req, res, next) => {
     thumbnail,
     nameRU,
     nameEN,
+    movieId,
     owner: req.user._id,
-    // movieId,
   })
     .then((movie) => res.send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании фильма'));
+      } else {
+        next(err);
       }
     });
 };
@@ -50,11 +52,12 @@ module.exports.deleteMovie = (req, res, next) => {
       }
       return next(new ForbiddenError('Нельзя удалять чужие фильмы'));
     })
-    .then((movie) => Movie.findByIdAndRemove(movie._id)
-      .then((movieRemoved) => res.send(movieRemoved)))
+    .then((movie) => movie.remove().then((movieRemoved) => res.send(movieRemoved)))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(`Фильм с указанным ${req.params.movieId} не найден`));
+      } else {
+        next(err);
       }
     });
 };

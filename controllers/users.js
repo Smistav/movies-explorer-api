@@ -19,13 +19,15 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.send(user))
+    .then((user) => res.send({ name: user.name, email: user.email }))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
       if (err.name === 'MongoError' && err.code === 11000) {
         next(new MongoError('Такой пользователь уже существует'));
+      } else {
+        next(err);
       }
     });
 };
@@ -37,6 +39,8 @@ module.exports.getUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(`Пользователь по указанному ${req.user._id} не найден`));
+      } else {
+        next(err);
       }
     });
 };
@@ -47,11 +51,13 @@ module.exports.setUser = (req, res, next) => {
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
       }
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(`Пользователь по указанному ${req.user._id} не найден`));
+      } else {
+        next(err);
       }
     });
 };
@@ -66,13 +72,7 @@ module.exports.login = (req, res, next) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-          // sameSite: true,
-        })
-        .send({ token });
+      res.send({ token });
     })
     .catch((err) => next(new UnauthorizedError(err.message)));
 };

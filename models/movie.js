@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
-
-const REGEXPEN = /^[a-zA-Z0-9-]+$/g;
-const REGEXPRU = /^[а-яёА-ЯЁ0-9-]+$/g;
+const isURL = require('validator/lib/isURL');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -28,7 +26,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(link) {
-        return /https?:\/\/(www\.)?[a-z0-9-.]{3,20}[a-z]{2,6}[-._~:/[\]?#@!$&'()*+,;=a-z0-9]*/g.test(link);
+        return isURL(link);
       },
       message: 'Не правильный URL',
     },
@@ -38,7 +36,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(link) {
-        return /https?:\/\/(www\.)?[a-z0-9-.]{3,20}[a-z]{2,6}[-._~:/[\]?#@!$&'()*+,;=a-z0-9]*/g.test(link);
+        return isURL(link);
       },
       message: 'Не правильный URL',
     },
@@ -48,7 +46,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(link) {
-        return /https?:\/\/(www\.)?[a-z0-9-.]{3,20}[a-z]{2,6}[-._~:/[\]?#@!$&'()*+,;=a-z0-9]*/g.test(link);
+        return isURL(link);
       },
       message: 'Не правильный URL',
     },
@@ -56,31 +54,19 @@ const movieSchema = new mongoose.Schema({
   },
   nameRU: {
     type: String,
-    validate: {
-      validator(link) {
-        return REGEXPRU.test(link);
-      },
-      message: 'Это поле должно быть на русском',
-    },
     required: true,
   },
   nameEN: {
     type: String,
-    validate: {
-      validator(link) {
-        return REGEXPEN.test(link);
-      },
-      message: 'Это поле должно быть на английском',
-    },
     required: true,
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-  // movieId: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   required: true,
-  // },
+  movieId: {
+    type: Number,
+    required: true,
+  },
 });
 module.exports = mongoose.model('movie', movieSchema);
