@@ -6,9 +6,6 @@
 
 JS, Node js, Express, MongoDb
 
-### Ссылка на проект
-
-https://api.smistav.nomoredomains.icu/
 
 ### Для развертывания проекта
 
